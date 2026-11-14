@@ -1,0 +1,16 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# File sementara & presentasi MS Office
+~$*
+*.pptx
+docs/
+
+# Dataset berukuran besar (uncomment baris di bawah jika tidak ingin mengunggah CSV ke GitHub)
+# data/*.csv
+
+# OS files
+.DS_Store
+Thumbs.db
