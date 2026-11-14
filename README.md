@@ -25,10 +25,21 @@ Seluruh tahapan pengolahan, analisis, dan visualisasi diimplementasikan di dalam
 4. **Bagian 4 — Intensitas Sinyal GPS (`pings_per_maid`):** Analisis rasio pengiriman sinyal per perangkat antar Kabupaten/Kota serta komparasi jam sibuk (`08:00–17:00`) vs luar jam sibuk.
 
 ### B. Aliran Origin-Destination (OD) & Pemodelan Graf (`od_home_visits_kapanewon_monthly.csv`)
-5. **Bagian 5 — Matriks OD Makro Antar-Kabupaten/Kota:** Heatmap matriks OD 5×5 serta proporsi pergerakan *intra-kabupaten* vs *lintas-kabupaten* (*inter-regency*).
-6. **Bagian 6 — Koridor Komuter Mikro Lintas-Kapanewon:** Identifikasi 20 rute komuter lintas-kapanewon tersibuk serta 10 Kapanewon pengirim dan penerima komuter terbesar.
-7. **Bagian 7 — Pemodelan Jaringan Graf (Network Centrality):** Pemodelan *directed weighted graph* (`networkx`) 78 Kapanewon menggunakan metrik *Weighted In-Degree*, *Weighted Out-Degree*, dan *PageRank Centrality*.
-8. **Bagian 8 — Tren OD Bulanan & Evaluasi Kualitas Data (`reduced_quality`):** Tren aliran kunjungan bulanan (`2021-12` s.d. `2022-04`) dan evaluasi dampak penurunan kualitas data pada periode Maret–April 2022.
+5. **Bagian 5 — Matriks OD Makro Antar-Kabupaten/Kota:** Heatmap matriks OD 5×5 serta proporsi pergerakan *intra-kapanewon* (*lokal/stay*), *komuter intra-kabupaten*, dan *komuter lintas-kabupaten* (*inter-regency*).
+6. **Bagian 6 — Koridor Komuter Mikro Lintas-Kapanewon:** Identifikasi 20 rute komuter lintas-kapanewon tersibuk (periode normal Des 2021–Feb 2022 agar bebas artefak *centroid*) serta 10 Kapanewon pengirim dan penerima komuter terbesar pada 78 wilayah terdisambiguasi.
+7. **Bagian 7 — Pemodelan Jaringan Graf (Network Centrality):** Pemodelan *directed weighted graph* (`networkx`) tepat 78 Kapanewon tanpa *self-loop* menggunakan metrik *Weighted In-Degree*, *Weighted Out-Degree*, dan *PageRank Centrality*.
+8. **Bagian 8 — Tren OD Bulanan & Evaluasi Kualitas Data (`reduced_quality`):** Tren aliran kunjungan bulanan (`2021-12` s.d. `2022-04`) dan evaluasi dampak penurunan kualitas data pada periode Maret–April 2022 yang dinormalisasi per bulan.
+
+---
+
+## Catatan Metodologis & Temuan Utama (Tervalidasi)
+
+Analisis di dalam notebook menerapkan kontrol kualitas data berikut untuk mencegah *false insight*:
+1. **Disambiguasi 78 Wilayah (`JETIS`):** Memisahkan **Kapanewon Jetis, Bantul (`34.02.09`)** dan **Kemantren Jetis, Kota Yogyakarta (`34.71.02`)** sehingga graf tetap berjumlah tepat **78 simpul** dengan **0 *self-loop*** (`NGEMPLAK` menempati peringkat #10 penerima kunjungan, sedangkan `JETIS (YOGYAKARTA)` menempati peringkat #15 PageRank).
+2. **Penanganan *Survivorship Bias* & *Outlier Centroid* (Bagian 1):** Rekonstruksi grid penuh (`78 kapanewon × 151 hari × 24 jam`, *zero-filled*) terhadap sensor $k$-anonymity (`n_maids < 5`) dan penggunaan median pada kurva sirkadian menghasilkan rasio siang/malam yang bebas bias: Gunungkidul (`4,03x`), Kulon Progo (`3,28x`), Bantul (`2,58x`), Sleman (`2,40x`), dan Kota Yogyakarta (`1,80x`).
+3. **Normalisasi Proporsi Jam Ramadhan (Bagian 3):** Penurunan volume harian sejak `16 Februari 2022` merupakan penyusutan cakupan sampel data. Setelah dinormalisasi ke proporsi harian per jam (`%`), Ramadhan (Apr 2022) menunjukkan lonjakan aktivitas Sahur (`03:00–04:00 WIB`) dari `1,44%–1,67%` menjadi `3,48%–3,98%` serta penurunan singkat pada jam berbuka (`17:00 WIB`, `4,77%`) dan Tarawih (`19:00 WIB`, `4,80%`).
+4. **Rasio Tertimbang & Pemisahan Komuter (Bagian 4–5):** Intensitas sinyal tertimbang (`total_pings / total_maids`) tertinggi berada di Kota Yogyakarta (`2,84`) dan Sleman (`2,73`). Untuk komuter yang keluar dari kapanewon asalnya (`origin_code != dest_code`), mayoritas perjalanan dari Bantul (`63,1%`), Kulon Progo (`58,9%`), Kota Yogyakarta (`51,5%`), dan Gunungkidul (`50,9%`) bersifat lintas-kabupaten, sedangkan Sleman didominasi komuter intra-kabupaten (`56,5%`).
+5. **Normalisasi Durasi `reduced_quality` (Bagian 8):** Pada periode Maret–April 2022 (2 bulan vs 3 bulan normal), rata-rata rute OD aktif turun dari `2.624` menjadi `1.011` rute/bulan (`-61,5%`) dan rata-rata `n_maids` per rute turun dari `74,9` menjadi `26,0` (`-65,3%`).
 
 ---
 
